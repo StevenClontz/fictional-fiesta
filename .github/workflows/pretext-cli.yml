@@ -35,10 +35,10 @@ jobs:
     # only runs if Cloudflare secrets are set in the GitHub repo
     deploy-cloudflare:
         runs-on: ubuntu-latest
-        needs: build
         env: 
-            CLOUDFLARE_PROJECT_NAME: ${{ secrets.CLOUDFLARE_PROJECT_NAME }}
-        if: ${{ $CLOUDFLARE_PROJECT_NAME != '' }}
+            cloudflare_project_name: ${{ secrets.CLOUDFLARE_PROJECT_NAME }}
+        if: ${{ env.cloudflare_project_name == '' }}
+        needs: build
 
         steps:
             - name: Download artifact
