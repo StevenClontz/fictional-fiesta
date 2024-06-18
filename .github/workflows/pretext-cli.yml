@@ -68,11 +68,23 @@ jobs:
                   gitHubToken: ${{ secrets.GITHUB_TOKEN }}
 
     # This job deploys the artifact built in the previous job to Github pages.
-    # Only triggers on main branch
-    check-and-deploy-ghpages:
+    # Only triggers on main branch, and if a gh-pages branch does not exist
+    check-ghpages:
         runs-on: ubuntu-latest
         needs: build
-        if: github.ref == 'refs/heads/main'
+        steps:
+            - id: branch-exists
+              uses: GuillaumeFalourd/branch-exists@v1
+              with:
+                  branch: gh-pages
+            - if: steps.branch-exists.outputs.exists == 'false'
+              id: check
+              run: echo 'gh-pages Branch NOT FOUND'
+              
+    deploy-ghpages:
+        runs-on: ubuntu-latest
+        needs: check-ghpages
+        if: github.ref == 'refs/heads/main' && needs.check-ghpages.check.outcome == 'success'
         permissions:
             contents: read
             pages: write
