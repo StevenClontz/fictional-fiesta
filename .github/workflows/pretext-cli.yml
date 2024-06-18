@@ -73,15 +73,18 @@ jobs:
         runs-on: ubuntu-latest
         needs: build
         if: github.ref == 'refs/heads/main'
+
         steps:
-            - name: check if github pages is enabled
+            - name: View context attributes
               id: check
-              uses: AlexAegis/check-github-pages@v1
+              uses: actions/github-script@v7
+              with:
+                  script: console.log(context)
 
     deploy-ghpages:
         runs-on: ubuntu-latest
         needs: check-ghpages
-        if: needs.check-ghpages.outputs.is_enabled
+        if: needs.check-ghpages.check.outcome == 'success'
         permissions:
             contents: read
             pages: write
