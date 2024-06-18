@@ -39,6 +39,7 @@ jobs:
 
         steps:
             - name: Run only if Cloudflare Pages is configured
+              id: check
               env: 
                   cloudflare_project_name: ${{ secrets.CLOUDFLARE_PROJECT_NAME }}
               if: ${{ env.cloudflare_project_name != '' }}
@@ -47,6 +48,7 @@ jobs:
     deploy-cloudflare:
         runs-on: ubuntu-latest
         needs: check-cloudflare
+        if: needs.check-cloudflare.check.outcome == 'success'
 
         steps:
             - name: Download artifact
