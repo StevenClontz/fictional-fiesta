@@ -35,20 +35,23 @@ jobs:
     # only runs if Cloudflare secrets are set in the GitHub repo
     deploy-cloudflare:
         runs-on: ubuntu-latest
-        env: 
-            cloudflare_project_name: ${{ secrets.CLOUDFLARE_PROJECT_NAME }}
-        if: ${{ env.cloudflare_project_name == '' }}
         needs: build
 
         steps:
             - name: Download artifact
+              id: download
+              env: 
+                  cloudflare_project_name: ${{ secrets.CLOUDFLARE_PROJECT_NAME }}
+              if: ${{ env.cloudflare_project_name == '' }}
               uses: actions/download-artifact@v4
               with:
                   name: deploy
                   path: deploy
             - name: Create 404.html
+              if: steps.download.outcome == 'success'
               run: echo "404 page not found" >> deploy/404.html
             - name: Publish to Cloudflare
+              if: steps.download.outcome == 'success'
               uses: cloudflare/pages-action@v1
               with:
                   apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
