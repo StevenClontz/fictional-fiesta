@@ -38,7 +38,7 @@ jobs:
         needs: build
         env: 
             CLOUDFLARE_PROJECT_NAME: ${{ secrets.CLOUDFLARE_PROJECT_NAME }}
-        if: ${{ env.CLOUDFLARE_PROJECT_NAME != '' }}
+        if: ${{ $CLOUDFLARE_PROJECT_NAME != '' }}
 
         steps:
             - name: Download artifact
