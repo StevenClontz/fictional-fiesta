@@ -49,7 +49,7 @@ jobs:
                   path: deploy
             - name: Skip Cloudflare deploy
               if: steps.download.outcome != 'success'
-              run: echo "Cloudflare Pages is not configured for this repository"
+              run: echo "Cloudflare Pages is not configured for this repository or artifact download failed."
             - name: Create 404.html
               if: steps.download.outcome == 'success'
               run: echo "404 page not found" >> deploy/404.html
