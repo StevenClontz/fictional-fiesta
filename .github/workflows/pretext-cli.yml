@@ -42,6 +42,7 @@ jobs:
               env: 
                   cloudflare_project_name: ${{ secrets.CLOUDFLARE_PROJECT_NAME }}
               if: ${{ env.cloudflare_project_name != '' }}
+              run: echo "Cloudflare Pages is configured!"
 
     deploy-cloudflare:
         runs-on: ubuntu-latest
