@@ -12,7 +12,7 @@ on:
 jobs:
     build:
         runs-on: ubuntu-latest
-        container: oscarlevin/pretext:full
+        # container: oscarlevin/pretext:full
 
         steps:
             - name: Checkout source
@@ -38,11 +38,10 @@ jobs:
         needs: build
 
         steps:
-            - name: Fail if Cloudflare Pages is not configured
+            - name: Run only if Cloudflare Pages is configured
               env: 
                   cloudflare_project_name: ${{ secrets.CLOUDFLARE_PROJECT_NAME }}
-              if: ${{ env.cloudflare_project_name == '' }}
-              run: exit 1
+              if: ${{ env.cloudflare_project_name != '' }}
 
     deploy-cloudflare:
         runs-on: ubuntu-latest
