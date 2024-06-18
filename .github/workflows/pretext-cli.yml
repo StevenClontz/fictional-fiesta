@@ -94,14 +94,14 @@ jobs:
               uses: actions/configure-pages@v4
               continue-on-error: true
             - name: Skip GitHub Pages
-              if: steps.check.failure
+              if: steps.check.outcome == 'failure'
               run: echo "Skipping un-enabled GitHub Pages deploy"
             - name: Upload artifact
-              if: steps.check.success
+              if: steps.check.outcome == 'success'
               uses: actions/upload-pages-artifact@v3
               with:
                   path: deploy
             - name: Deploy to Github Pages
-              if: steps.check.success
+              if: steps.check.outcome == 'success'
               id: deployment
               uses: actions/deploy-pages@v4
