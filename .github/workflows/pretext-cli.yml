@@ -31,13 +31,23 @@ jobs:
               with:
                   name: deploy
                   path: output/stage
+            
+            - name: Check cloudflare
+              id: check-cloudflare
+              env: 
+                  cloudflare_enabled: ${{ secrets.CLOUDFLARE_PROJECT_NAME != '' }}
+              if: env.cloudflare_enabled
+            
+            - name: Check ghpages
+              id: check-ghpages
+              env: 
+                  ghpages_enabled: ${{ secrets.GHPAGES_ENABLED != '' }}
+              if: env.ghpages_enabled && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
 
     deploy-cloudflare:
         runs-on: ubuntu-latest
         needs: build
-        env: 
-            cloudflare_enabled: ${{ secrets.CLOUDFLARE_PROJECT_NAME != '' }}
-        if: env.cloudflare_enabled
+        if: needs.build.check-cloudflare.success
 
         steps:
             - name: Download artifact
@@ -59,9 +69,7 @@ jobs:
     deploy-ghpages:
         runs-on: ubuntu-latest
         needs: build
-        env: 
-            ghpages_enabled: ${{ secrets.GHPAGES_ENABLED != '' }}
-        if: env.ghpages_enabled && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+        if: needs.build.check-ghpgaes.success
         permissions:
             contents: read
             pages: write
