@@ -43,7 +43,7 @@ jobs:
     deploy-cloudflare:
         runs-on: ubuntu-latest
         needs: build
-        if: needs.build.check-cloudflare.stdout != ""
+        if: ${{ needs.build.check-cloudflare.stdout != '' }}
 
         steps:
             - name: Download artifact
@@ -65,7 +65,7 @@ jobs:
     deploy-ghpages:
         runs-on: ubuntu-latest
         needs: check
-        if: needs.build.check-ghpages.stdout ~= "yes"
+        if: ${{ needs.build.check-ghpages.stdout ~= 'yes' }}
         permissions:
             contents: read
             pages: write
