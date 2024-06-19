@@ -12,11 +12,7 @@ on:
 jobs:
     build:
         runs-on: ubuntu-latest
-        # container: oscarlevin/pretext:full
-
-        outputs:
-            cloudflare_project_name: ${{ steps.check-cloudflare.outputs.project_name }}
-            ghpages_enabled: ${{ steps.check-ghpages.outputs.enabled }}
+        container: oscarlevin/pretext:full
 
         steps:
             - name: Checkout source
@@ -35,19 +31,13 @@ jobs:
               with:
                   name: deploy
                   path: output/stage
-            
-            - name: Check project.ptx for deploy-cloudflare
-              id: check-cloudflare
-              run: echo 'project_name=foobar' >> "$GITHUB_OUTPUT" # pretext deploy --cloudflare
-            
-            - name: Check project.ptx for deploy-ghpages
-              id: check-ghpages
-              run: echo 'enabled=yes' >> "$GITHUB_OUTPUT" # pretext deploy --enabled
 
     deploy-cloudflare:
         runs-on: ubuntu-latest
         needs: build
-        if: needs.build.outputs.cloudflare_project_name != ''
+        env: 
+            cloudflare_enabled: ${{ secrets.CLOUDFLARE_PROJECT_NAME != "" }}
+        if: env.cloudflare_enabled
 
         steps:
             - name: Download artifact
@@ -69,7 +59,9 @@ jobs:
     deploy-ghpages:
         runs-on: ubuntu-latest
         needs: build
-        if: needs.build.outputs.ghpages_enabled == 'yes' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+        env: 
+            ghpages_enabled: ${{ secrets.GHPAGES_ENABLED != "" }}
+        if: env.ghpages_enabled && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
         permissions:
             contents: read
             pages: write
