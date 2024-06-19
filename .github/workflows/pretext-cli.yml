@@ -14,6 +14,10 @@ jobs:
         runs-on: ubuntu-latest
         # container: oscarlevin/pretext:full
 
+        outputs:
+            check-cloudflare: ${{ steps.check-cloudflare.outcome }}
+            check-ghpages: ${{ steps.check-ghpages.outcome }}
+
         steps:
             - name: Checkout source
               uses: actions/checkout@v4
@@ -32,14 +36,14 @@ jobs:
                   name: deploy
                   path: output/stage
             
-            - name: Check cloudflare
+            - name: Run if Cloudflare is enabled
               id: check-cloudflare
               env: 
                   cloudflare_project_name: ${{ secrets.CLOUDFLARE_PROJECT_NAME }}
               if: env.cloudflare_project_name != ''
               run: echo Cloudflare enabled
             
-            - name: Check ghpages
+            - name: Run if Ghpages is enabled
               id: check-ghpages
               env: 
                   ghpages_enabled: ${{ secrets.GHPAGES_ENABLED }}
@@ -49,7 +53,7 @@ jobs:
     deploy-cloudflare:
         runs-on: ubuntu-latest
         needs: build
-        if: needs.build.check-cloudflare.outcome == 'success'
+        if: needs.build.outputs.check-cloudflare == 'success'
 
         steps:
             - name: Download artifact
@@ -64,14 +68,14 @@ jobs:
               with:
                   apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
                   accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-                  projectName: ${{ needs.build.check-cloudflare.outputs.project_name }}
+                  projectName:${{ secrets.CLOUDFLARE_PROJECT_NAME }}
                   directory: deploy
                   gitHubToken: ${{ secrets.GITHUB_TOKEN }}
 
     deploy-ghpages:
         runs-on: ubuntu-latest
         needs: build
-        if: needs.build.check-ghpgaes.outcome == 'success'
+        if: needs.build.outputs.check-ghpages == 'success'
         permissions:
             contents: read
             pages: write
