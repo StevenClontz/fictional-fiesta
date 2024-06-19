@@ -17,10 +17,6 @@ jobs:
         runs-on: ubuntu-latest
         container: oscarlevin/pretext:full
 
-        outputs:
-            cloudflare_enabled: ${{ steps.check-cloudflare.outputs.enabled }}
-            ghpages_enabled: ${{ steps.check-ghpages.outputs.enabled }}
-
         steps:
             - name: Checkout source
               uses: actions/checkout@v4
